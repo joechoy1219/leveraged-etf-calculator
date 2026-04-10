@@ -15,7 +15,7 @@ const OPTIONS: { multiplier: Multiplier; direction: Direction; label: string }[]
 export function LeverageSelector({ value, onChange }: LeverageSelectorProps) {
   return (
     <div>
-      <p className="text-sm font-medium text-gray-500 mb-2">槓桿倍數</p>
+      <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">槓桿倍數</p>
       <div className="grid grid-cols-4 gap-2">
         {OPTIONS.map((opt) => {
           const isActive =
@@ -32,7 +32,7 @@ export function LeverageSelector({ value, onChange }: LeverageSelectorProps) {
                   ? isLong
                     ? 'bg-emerald-500 border-emerald-500 text-white'
                     : 'bg-red-500 border-red-500 text-white'
-                  : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400',
+                  : 'bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:border-gray-400 dark:hover:border-slate-400',
               ].join(' ')}
             >
               {opt.label}

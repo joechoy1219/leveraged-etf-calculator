@@ -18,7 +18,7 @@ interface InputPanelProps {
 function NumberInput({ id, label, placeholder, value, onChange }: Field) {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="text-sm font-medium text-gray-500">
+      <label htmlFor={id} className="text-sm font-medium text-gray-500 dark:text-gray-400">
         {label}
       </label>
       <input
@@ -30,7 +30,7 @@ function NumberInput({ id, label, placeholder, value, onChange }: Field) {
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-gray-800 text-right tabular-nums text-lg focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition"
+        className="w-full rounded-lg border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 px-4 py-2.5 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 text-right tabular-nums text-lg focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 transition"
       />
     </div>
   );
