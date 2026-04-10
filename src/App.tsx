@@ -22,7 +22,7 @@ function App() {
   // Tracks activeId synchronously without render-time assignment (safe in concurrent mode)
   const activeIdRef = useRef<string | null>(null)
 
-  const { stocks, upsert, remove } = useStockMemory()
+  const { stocks, upsert, remove, reorder } = useStockMemory()
 
   const inputs: CalculatorInputs = { stockOpen, stockCurrent, etfOpen, leverage }
   const result = useMemo(() => calculate(inputs), [stockOpen, stockCurrent, etfOpen, leverage])
@@ -96,6 +96,7 @@ function App() {
         activeId={activeId}
         onSelect={handleSelectStock}
         onDelete={handleDelete}
+        onReorder={reorder}
       />
       <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
         {/* Header */}

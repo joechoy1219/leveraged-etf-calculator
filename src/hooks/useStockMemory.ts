@@ -39,5 +39,10 @@ export function useStockMemory() {
     });
   }, []);
 
-  return { stocks, upsert, remove };
+  const reorder = useCallback((newList: StockMemory[]) => {
+    saveToStorage(newList);
+    setStocks(newList);
+  }, []);
+
+  return { stocks, upsert, remove, reorder };
 }
