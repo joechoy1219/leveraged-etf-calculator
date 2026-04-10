@@ -18,3 +18,12 @@ export interface CalculatorResult {
   etfChangePercent: number;
   etfEstimatedPrice: number;
 }
+
+export interface StockMemory {
+  id: string;
+  name: string;
+  stockOpen: string;
+  stockCurrent: string;
+  etfOpen: string;
+  leverage: LeverageOption;
+}

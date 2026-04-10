@@ -1,2 +1,17 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+@keyframes sweep-delete {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes collapse-height {
+  0%   { max-height: 60px; padding-top: 0.625rem; padding-bottom: 0.625rem; }
+  100% { max-height: 0;    padding-top: 0;         padding-bottom: 0; }
+}
+
+@keyframes collapse-slide {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
