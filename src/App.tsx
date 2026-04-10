@@ -13,7 +13,7 @@ function App() {
   const [stockCurrent, setStockCurrent] = useState('')
   const [etfOpen, setEtfOpen] = useState('')
   const [leverage, setLeverage] = useState<LeverageOption>(DEFAULT_LEVERAGE)
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark')
 
   const inputs: CalculatorInputs = { stockOpen, stockCurrent, etfOpen, leverage }
   const result = useMemo(() => calculate(inputs), [stockOpen, stockCurrent, etfOpen, leverage])
@@ -36,7 +36,11 @@ function App() {
           </div>
           <button
             type="button"
-            onClick={() => setDark(d => !d)}
+            onClick={() => setDark(d => {
+              const next = !d
+              localStorage.setItem('theme', next ? 'dark' : 'light')
+              return next
+            })}
             className="mt-0.5 p-1.5 rounded-lg text-indigo-200 hover:text-white hover:bg-indigo-500 dark:hover:bg-indigo-700 transition cursor-pointer text-lg leading-none"
             aria-label={dark ? '切換淺色模式' : '切換深色模式'}
           >
