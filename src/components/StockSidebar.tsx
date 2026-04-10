@@ -107,19 +107,6 @@ export function StockSidebar({ stocks, activeId, onSelect, onDelete, onReorder, 
               <>
                 <button
                   type="button"
-                  title={mode === 'batch' ? '退出批量刪除' : '批量刪除'}
-                  onClick={() => switchMode('batch')}
-                  className={[
-                    'w-6 h-6 flex items-center justify-center rounded text-sm transition cursor-pointer',
-                    mode === 'batch'
-                      ? 'bg-red-100 dark:bg-red-900/30 text-red-500'
-                      : 'text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400',
-                  ].join(' ')}
-                >
-                  🗑
-                </button>
-                <button
-                  type="button"
                   title={mode === 'reorder' ? '完成排序' : '拖曳排序'}
                   onClick={() => switchMode('reorder')}
                   className={[
@@ -130,6 +117,19 @@ export function StockSidebar({ stocks, activeId, onSelect, onDelete, onReorder, 
                   ].join(' ')}
                 >
                   ≡
+                </button>
+                <button
+                  type="button"
+                  title={mode === 'batch' ? '退出批量刪除' : '批量刪除'}
+                  onClick={() => switchMode('batch')}
+                  className={[
+                    'w-6 h-6 flex items-center justify-center rounded text-sm transition cursor-pointer',
+                    mode === 'batch'
+                      ? 'bg-red-100 dark:bg-red-900/30 text-red-500'
+                      : 'text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400',
+                  ].join(' ')}
+                >
+                  🗑
                 </button>
               </>
             )}
