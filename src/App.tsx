@@ -27,18 +27,14 @@ function App() {
   const inputs: CalculatorInputs = { stockOpen, stockCurrent, etfOpen, leverage }
   const result = useMemo(() => calculate(inputs), [stockOpen, stockCurrent, etfOpen, leverage])
 
-  const buildSnapshot = (): StockMemory => {
-    const activeStock = stocks.find(s => s.id === activeId)
-    const reuseId = activeStock?.name === stockName
-    return {
-      id: reuseId ? activeId! : crypto.randomUUID(),
-      name: stockName,
-      stockOpen,
-      stockCurrent,
-      etfOpen,
-      leverage,
-    }
-  }
+  const buildSnapshot = (): StockMemory => ({
+    id: activeId ?? crypto.randomUUID(),
+    name: stockName,
+    stockOpen,
+    stockCurrent,
+    etfOpen,
+    leverage,
+  })
 
   const loadStock = (stock: StockMemory) => {
     activeIdRef.current = stock.id  // update ref before setState so next click sees it immediately
@@ -52,8 +48,9 @@ function App() {
 
   const handleSelectStock = (stock: StockMemory) => {
     if (stock.id === activeIdRef.current) return
-    if (stockName.trim()) {
-      upsert(buildSnapshot())
+    // Auto-save: always write back to the original stock (preserve its ID even if name changed)
+    if (activeIdRef.current && stockName.trim()) {
+      upsert({ ...buildSnapshot(), id: activeIdRef.current })
     }
     loadStock(stock)
   }
@@ -62,8 +59,24 @@ function App() {
     if (!stockName.trim()) return
     const snapshot = buildSnapshot()
     upsert(snapshot)
-    activeIdRef.current = snapshot.id  // keep ref in sync
+    activeIdRef.current = snapshot.id
     setActiveId(snapshot.id)
+  }
+
+  const handleAddNew = () => {
+    // Auto-save current before switching
+    if (activeIdRef.current && stockName.trim()) {
+      upsert({ id: activeIdRef.current, name: stockName, stockOpen, stockCurrent, etfOpen, leverage })
+    }
+    // Generate unique name
+    const base = 'NEW'
+    const existingNames = new Set(stocks.map(s => s.name))
+    let name = base
+    let counter = 1
+    while (existingNames.has(name)) name = `${base} (${counter++})`
+    const newStock: StockMemory = { id: crypto.randomUUID(), name, stockOpen: '', stockCurrent: '', etfOpen: '', leverage: DEFAULT_LEVERAGE }
+    upsert(newStock)
+    loadStock(newStock)
   }
 
   const handleDelete = (id: string) => {
@@ -97,6 +110,7 @@ function App() {
         onSelect={handleSelectStock}
         onDelete={handleDelete}
         onReorder={reorder}
+        onAddNew={handleAddNew}
       />
       <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
         {/* Header */}
@@ -136,7 +150,7 @@ function App() {
               disabled={!stockName.trim()}
               className="px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
             >
-              儲存
+              {activeId ? '儲存' : '新增'}
             </button>
           </div>
 

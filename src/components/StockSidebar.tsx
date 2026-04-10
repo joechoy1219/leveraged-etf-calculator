@@ -10,9 +10,10 @@ interface StockSidebarProps {
   onSelect: (stock: StockMemory) => void;
   onDelete: (id: string) => void;
   onReorder: (newList: StockMemory[]) => void;
+  onAddNew: () => void;
 }
 
-export function StockSidebar({ stocks, activeId, onSelect, onDelete, onReorder }: StockSidebarProps) {
+export function StockSidebar({ stocks, activeId, onSelect, onDelete, onReorder, onAddNew }: StockSidebarProps) {
   const [mode, setMode] = useState<SidebarMode>('normal');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -92,36 +93,47 @@ export function StockSidebar({ stocks, activeId, onSelect, onDelete, onReorder }
           <h2 className="flex-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-500">
             已儲存股票
           </h2>
-          {stocks.length > 0 && (
-            <div className="flex gap-1">
-              <button
-                type="button"
-                title={mode === 'batch' ? '退出批量刪除' : '批量刪除'}
-                onClick={() => switchMode('batch')}
-                className={[
-                  'w-6 h-6 flex items-center justify-center rounded text-sm transition cursor-pointer',
-                  mode === 'batch'
-                    ? 'bg-red-100 dark:bg-red-900/30 text-red-500'
-                    : 'text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400',
-                ].join(' ')}
-              >
-                🗑
-              </button>
-              <button
-                type="button"
-                title={mode === 'reorder' ? '完成排序' : '拖曳排序'}
-                onClick={() => switchMode('reorder')}
-                className={[
-                  'w-6 h-6 flex items-center justify-center rounded text-base font-bold leading-none transition cursor-pointer',
-                  mode === 'reorder'
-                    ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-500'
-                    : 'text-gray-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400',
-                ].join(' ')}
-              >
-                ≡
-              </button>
-            </div>
-          )}
+          <div className="flex gap-1">
+            {/* Add new stock */}
+            <button
+              type="button"
+              title="新增股票"
+              onClick={onAddNew}
+              className="w-6 h-6 flex items-center justify-center rounded text-sm font-bold transition cursor-pointer text-gray-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30"
+            >
+              +
+            </button>
+            {stocks.length > 0 && (
+              <>
+                <button
+                  type="button"
+                  title={mode === 'batch' ? '退出批量刪除' : '批量刪除'}
+                  onClick={() => switchMode('batch')}
+                  className={[
+                    'w-6 h-6 flex items-center justify-center rounded text-sm transition cursor-pointer',
+                    mode === 'batch'
+                      ? 'bg-red-100 dark:bg-red-900/30 text-red-500'
+                      : 'text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400',
+                  ].join(' ')}
+                >
+                  🗑
+                </button>
+                <button
+                  type="button"
+                  title={mode === 'reorder' ? '完成排序' : '拖曳排序'}
+                  onClick={() => switchMode('reorder')}
+                  className={[
+                    'w-6 h-6 flex items-center justify-center rounded text-base font-bold leading-none transition cursor-pointer',
+                    mode === 'reorder'
+                      ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-500'
+                      : 'text-gray-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400',
+                  ].join(' ')}
+                >
+                  ≡
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Batch action bar */}
