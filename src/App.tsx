@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import type { CalculatorInputs, LeverageOption, StockMemory } from './types'
 import { calculate } from './hooks/useCalculator'
 import { useStockMemory } from './hooks/useStockMemory'
@@ -19,6 +19,9 @@ function App() {
   const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark')
   const [activeId, setActiveId] = useState<string | null>(null)
 
+  // Tracks activeId synchronously without render-time assignment (safe in concurrent mode)
+  const activeIdRef = useRef<string | null>(null)
+
   const { stocks, upsert, remove } = useStockMemory()
 
   const inputs: CalculatorInputs = { stockOpen, stockCurrent, etfOpen, leverage }
@@ -38,6 +41,7 @@ function App() {
   }
 
   const loadStock = (stock: StockMemory) => {
+    activeIdRef.current = stock.id  // update ref before setState so next click sees it immediately
     setActiveId(stock.id)
     setStockName(stock.name)
     setStockOpen(stock.stockOpen)
@@ -47,7 +51,8 @@ function App() {
   }
 
   const handleSelectStock = (stock: StockMemory) => {
-    if (stockName.trim() && stock.id !== activeId) {
+    if (stock.id === activeIdRef.current) return
+    if (stockName.trim()) {
       upsert(buildSnapshot())
     }
     loadStock(stock)
@@ -57,12 +62,14 @@ function App() {
     if (!stockName.trim()) return
     const snapshot = buildSnapshot()
     upsert(snapshot)
+    activeIdRef.current = snapshot.id  // keep ref in sync
     setActiveId(snapshot.id)
   }
 
   const handleDelete = (id: string) => {
     remove(id)
-    if (activeId === id) {
+    if (activeIdRef.current === id) {
+      activeIdRef.current = null
       setActiveId(null)
       setStockName('')
       setStockOpen('')
@@ -73,6 +80,7 @@ function App() {
   }
 
   const handleReset = () => {
+    activeIdRef.current = null
     setStockName('')
     setStockOpen('')
     setStockCurrent('')
