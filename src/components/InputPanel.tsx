@@ -49,7 +49,7 @@ export function InputPanel({
       <div className="grid grid-cols-2 gap-3">
         <NumberInput
           id="stock-open"
-          label="正股 開市價"
+          label="正股 前收價"
           placeholder="0.00"
           value={stockOpen}
           onChange={onStockOpenChange}
@@ -64,7 +64,7 @@ export function InputPanel({
       </div>
       <NumberInput
         id="etf-open"
-        label="槓桿 ETF 開市價"
+        label="槓桿 ETF 前收價"
         placeholder="0.00"
         value={etfOpen}
         onChange={onEtfOpenChange}
