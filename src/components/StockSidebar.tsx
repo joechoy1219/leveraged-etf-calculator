@@ -164,9 +164,13 @@ export function StockSidebar({ stocks, activeId, onSelect, onDelete, onReorder }
                   onDragOver={mode === 'reorder' ? (e) => handleDragOver(e, stock.id) : undefined}
                   onDrop={mode === 'reorder' ? (e) => handleDrop(e, stock.id) : undefined}
                   onDragEnd={mode === 'reorder' ? handleDragEnd : undefined}
+                  onClick={() => {
+                    if (mode === 'normal' && !isDeleting) onSelect(stock);
+                    else if (mode === 'batch') toggleSelect(stock.id);
+                  }}
                   className={[
                     'group relative rounded-xl px-3 py-2.5 transition-colors shrink-0 md:shrink overflow-hidden select-none',
-                    mode === 'reorder' ? 'cursor-grab' : '',
+                    mode === 'reorder' ? 'cursor-grab' : 'cursor-pointer',
                     isDragging ? 'opacity-40' : '',
                     isDragOver ? 'ring-2 ring-indigo-400 dark:ring-indigo-500' : '',
                     isActive
@@ -186,15 +190,11 @@ export function StockSidebar({ stocks, activeId, onSelect, onDelete, onReorder }
                   <div
                     className="flex items-center gap-2"
                     style={isCollapsing ? { animation: 'collapse-slide 0.5s cubic-bezier(0.4,0,0.2,1) forwards' } : undefined}
-                    onClick={() => {
-                      if (mode === 'normal' && !isDeleting) onSelect(stock);
-                      else if (mode === 'batch') toggleSelect(stock.id);
-                    }}
                   >
                     <span
                       className={[
                         'flex-1 text-sm font-semibold truncate max-w-[80px] md:max-w-none',
-                        mode !== 'reorder' ? 'cursor-pointer' : 'cursor-grab',
+                        mode !== 'reorder' ? '' : 'cursor-grab',
                         isActive ? 'text-white' : 'text-gray-700 dark:text-gray-200',
                         mode === 'batch' && isSelected ? 'text-red-600 dark:text-red-400' : '',
                       ].join(' ')}
