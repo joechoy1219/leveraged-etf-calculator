@@ -143,10 +143,10 @@ function App() {
     autoRefreshRef.current = autoRefreshQuote
   }, [autoRefreshQuote, etfOpen, leverage, normalizedSymbol, stockCurrent, stockName, stockOpen, stockSymbol])
 
-  const persistStockCurrent = useCallback((ownerId: string, current: string) => {
+  const persistStockPrices = useCallback((ownerId: string, patch: { stockCurrent?: string; stockOpen?: string }) => {
     const target = stocksRef.current.find((s) => s.id === ownerId)
     if (!target) return
-    upsert({ ...target, stockCurrent: current })
+    upsert({ ...target, ...patch })
   }, [upsert])
 
   const updateQuote = useCallback(async (silent = false) => {
@@ -177,9 +177,18 @@ function App() {
       if (isStale()) return
 
       const nextCurrent = autoRefreshQuote ? formatAutoRefreshPrice(chosen.price) : String(chosen.price)
+      const nextOpen = autoRefreshQuote && quote.previousClosePrice
+        ? formatAutoRefreshPrice(quote.previousClosePrice)
+        : null
       applyStockCurrent(nextCurrent, requestActiveId)
+      if (nextOpen !== null) {
+        applyStockOpen(nextOpen)
+      }
       if (requestActiveId) {
-        persistStockCurrent(requestActiveId, nextCurrent)
+        persistStockPrices(requestActiveId, {
+          stockCurrent: nextCurrent,
+          ...(nextOpen !== null ? { stockOpen: nextOpen } : {}),
+        })
       }
       setQuoteUpdatedAt(new Date())
       setQuoteError('')
@@ -203,7 +212,7 @@ function App() {
         setQuoteLoading(false)
       }
     }
-  }, [autoRefreshQuote, bootstrapIfNeeded, normalizedSymbol, applyStockCurrent, persistStockCurrent])
+  }, [autoRefreshQuote, bootstrapIfNeeded, normalizedSymbol, applyStockCurrent, persistStockPrices])
 
   useEffect(() => {
     clearTimer()
@@ -254,6 +263,13 @@ function App() {
     const ownerIdAtRender = activeId
     applyStockCurrent(formatAutoRefreshPrice(n), ownerIdAtRender)
   }, [activeId, autoRefreshQuote, stockCurrent, applyStockCurrent])
+
+  useEffect(() => {
+    if (!autoRefreshQuote) return
+    const n = parseFloat(stockOpen)
+    if (!isFinite(n) || n <= 0) return
+    applyStockOpen(formatAutoRefreshPrice(n))
+  }, [autoRefreshQuote, stockOpen])
 
   useEffect(() => {
     if (!activeId) return
@@ -506,6 +522,7 @@ function App() {
             onStockOpenChange={applyStockOpen}
             onStockCurrentChange={(v) => applyStockCurrent(v, activeIdRef.current)}
             onEtfOpenChange={applyEtfOpen}
+            disableStockOpen={autoRefreshQuote}
             disableStockCurrent={autoRefreshQuote}
           />
 

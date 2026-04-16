@@ -7,6 +7,7 @@ export interface PollingBootstrap {
 }
 
 export interface ParsedQuote {
+  previousClosePrice: number | null;
   regularPrice: number | null;
   preMarketPrice: number | null;
   marketStatus: string;
@@ -116,6 +117,7 @@ export async function pollAastocksQuote(params: PollingBootstrap): Promise<Parse
   }
 
   const parsed: ParsedQuote = {
+    previousClosePrice: toNumber(stock.r1),
     regularPrice: toNumber(stock.r2),
     preMarketPrice: toNumber(stock.r167),
     marketStatus: String(stock.c5 ?? stock.c6 ?? ''),

@@ -14,6 +14,7 @@ interface InputPanelProps {
   onStockOpenChange: (v: string) => void;
   onStockCurrentChange: (v: string) => void;
   onEtfOpenChange: (v: string) => void;
+  disableStockOpen?: boolean;
   disableStockCurrent?: boolean;
 }
 
@@ -46,6 +47,7 @@ export function InputPanel({
   onStockOpenChange,
   onStockCurrentChange,
   onEtfOpenChange,
+  disableStockOpen,
   disableStockCurrent,
 }: InputPanelProps) {
   return (
@@ -57,6 +59,7 @@ export function InputPanel({
           placeholder="0.00"
           value={stockOpen}
           onChange={onStockOpenChange}
+          disabled={disableStockOpen}
         />
         <NumberInput
           id="stock-current"
