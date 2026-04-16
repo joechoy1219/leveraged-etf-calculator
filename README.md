@@ -1,73 +1,81 @@
-# React + TypeScript + Vite
+# Leveraged ETF Calculator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite app for estimating leveraged ETF moves from underlying stock prices.
 
-Currently, two official plugins are available:
+## What Runs Where
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Frontend: static files built by Vite.
+- Quote API in local dev: Vite middleware in `vite.config.ts`.
+- Quote API in Cloudflare Pages: Pages Functions in `functions/api/aastocks/*`.
 
-## React Compiler
+Frontend endpoints:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `/api/aastocks/bootstrap`
+- `/api/aastocks/quote`
 
-## Expanding the ESLint configuration
+## Local Development
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+No extra setup is required for local development.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Cloudflare Pages Deployment (Step by Step)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1) Push code to GitHub
+
+Ensure these files are in your repository:
+
+- `functions/api/aastocks/bootstrap.ts`
+- `functions/api/aastocks/quote.ts`
+
+### 2) Create a Cloudflare Pages project
+
+1. Open Cloudflare Dashboard.
+2. Go to `Workers & Pages`.
+3. Click `Create` -> `Pages` -> `Connect to Git`.
+4. Select this repository.
+
+### 3) Configure build settings
+
+Use:
+
+- Framework preset: `Vite`
+- Build command: `npm run build`
+- Build output directory: `dist`
+- Root directory: leave empty (project root)
+
+### 4) Set environment variable
+
+In Pages project settings, set:
+
+- `VITE_BASE_PATH=/`
+- `VITE_AASTOCKS_API_BASE=/api`
+
+This keeps frontend and Pages Functions on the same domain.
+
+### 5) Deploy
+
+Click `Save and Deploy`.
+
+After deployment, verify:
+
+- Open the Pages URL and use the quote button.
+- Open:
+  - `https://<your-pages-domain>/api/aastocks/bootstrap?symbol=NVDA`
+- You should get JSON (or a 4xx/5xx JSON error), not a 404 page.
+
+## Important Base Path Note
+
+`vite.config.ts` reads `VITE_BASE_PATH`:
+
+- Cloudflare Pages root hosting: set `VITE_BASE_PATH=/`
+- GitHub Pages project-path hosting: set `VITE_BASE_PATH=/leveraged-etf-calculator/`
+
+## Build
+
+```bash
+npm run build
 ```
