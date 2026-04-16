@@ -10,5 +10,9 @@
   },
   "compatibility_flags": [
     "nodejs_compat"
-  ]
+  ],
+  "vars": {
+    "VITE_BASE_PATH": "/",
+    "VITE_AASTOCKS_API_BASE": "/api"
+  }
 }
