@@ -62,11 +62,7 @@ export function ResultPanel({ result, leverage }: ResultPanelProps) {
       : 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400';
 
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <StatCard
-        label="正股變動"
-        change={result ? result.stockChangePercent : null}
-      />
+    <div className="grid grid-cols-1 gap-3">
       <StatCard
         label="ETF 變動"
         badge={`${leverage.multiplier}x ${directionLabel}`}

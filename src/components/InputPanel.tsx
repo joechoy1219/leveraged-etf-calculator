@@ -10,6 +10,7 @@ interface Field {
 interface InputPanelProps {
   stockOpen: string;
   stockCurrent: string;
+  stockChangePercent?: number | null;
   etfOpen: string;
   onStockOpenChange: (v: string) => void;
   onStockCurrentChange: (v: string) => void;
@@ -40,9 +41,21 @@ function NumberInput({ id, label, placeholder, value, onChange, disabled }: Fiel
   );
 }
 
+function formatPercent(value: number): string {
+  const sign = value > 0 ? '+' : '';
+  return `${sign}${value.toFixed(2)}%`;
+}
+
+function changeColor(value: number): string {
+  if (value > 0) return 'text-emerald-600 dark:text-emerald-400';
+  if (value < 0) return 'text-red-500 dark:text-red-400';
+  return 'text-gray-600 dark:text-gray-300';
+}
+
 export function InputPanel({
   stockOpen,
   stockCurrent,
+  stockChangePercent,
   etfOpen,
   onStockOpenChange,
   onStockCurrentChange,
@@ -50,25 +63,43 @@ export function InputPanel({
   disableStockOpen,
   disableStockCurrent,
 }: InputPanelProps) {
+  const hasChange = stockChangePercent !== null && stockChangePercent !== undefined;
+  const changeDisplay = hasChange ? formatPercent(stockChangePercent) : '—';
+  const changeColorClass = hasChange ? changeColor(stockChangePercent) : 'text-gray-300 dark:text-slate-500';
+
   return (
     <div className="grid grid-cols-1 gap-4">
-      <div className="grid grid-cols-2 gap-3">
-        <NumberInput
-          id="stock-open"
-          label="正股 前收價"
-          placeholder="0.00"
-          value={stockOpen}
-          onChange={onStockOpenChange}
-          disabled={disableStockOpen}
-        />
-        <NumberInput
-          id="stock-current"
-          label="正股 現價"
-          placeholder="0.00"
-          value={stockCurrent}
-          onChange={onStockCurrentChange}
-          disabled={disableStockCurrent}
-        />
+      <div className="grid grid-cols-3 gap-3">
+        <div className="min-w-0">
+          <NumberInput
+            id="stock-open"
+            label="正股 前收價"
+            placeholder="0.00"
+            value={stockOpen}
+            onChange={onStockOpenChange}
+            disabled={disableStockOpen}
+          />
+        </div>
+        <div className="min-w-0">
+          <NumberInput
+            id="stock-current"
+            label="正股 現價"
+            placeholder="0.00"
+            value={stockCurrent}
+            onChange={onStockCurrentChange}
+            disabled={disableStockCurrent}
+          />
+        </div>
+        <div className="min-w-0 flex flex-col gap-1">
+          <div className="text-sm h-5" aria-hidden="true" />
+          <div className="px-1 py-2.5 tabular-nums flex items-center justify-end gap-1">
+            <span
+              className={`whitespace-nowrap font-extrabold tracking-tight leading-none text-xl sm:text-2xl ${changeColorClass}`}
+            >
+              {changeDisplay}
+            </span>
+          </div>
+        </div>
       </div>
       <NumberInput
         id="etf-open"

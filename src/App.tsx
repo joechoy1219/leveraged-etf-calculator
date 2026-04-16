@@ -535,6 +535,7 @@ function App() {
           <InputPanel
             stockOpen={stockOpen}
             stockCurrent={stockCurrent}
+            stockChangePercent={result ? result.stockChangePercent : null}
             etfOpen={etfOpen}
             onStockOpenChange={applyStockOpen}
             onStockCurrentChange={(v) => applyStockCurrent(v, activeIdRef.current)}
