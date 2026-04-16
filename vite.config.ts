@@ -2,6 +2,8 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 const AASTOCKS_REFERER_BASE = 'http://www.aastocks.com/tc/usq/quote/quote.aspx?symbol='
 const AASTOCKS_API_TOKEN_URL = 'https://www.aastocks.com/tc/resources/datafeed/getapitoken.ashx'
 const AASTOCKS_CE_TOKEN_URL = 'https://www.aastocks.com/tc/resources/datafeed/getcetoken.ashx'
@@ -118,7 +120,7 @@ function aastocksProxyPlugin() {
         }
       })
     },
-  }
+  };
 }
 
 export default defineConfig(({ command, mode }) => {
@@ -130,7 +132,8 @@ export default defineConfig(({ command, mode }) => {
       react(),
       tailwindcss(),
       ...(command === 'serve' ? [aastocksProxyPlugin()] : []),
+      cloudflare()
     ],
     base,
-  }
+  };
 })
