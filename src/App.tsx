@@ -146,6 +146,23 @@ function App() {
   const persistStockPrices = useCallback((ownerId: string, patch: { stockCurrent?: string; stockOpen?: string }) => {
     const target = stocksRef.current.find((s) => s.id === ownerId)
     if (!target) return
+
+    // During auto polling, keep non-price fields in sync with the latest UI edits
+    // so quote writes do not roll back in-progress user input.
+    if (ownerId === activeIdRef.current) {
+      upsert({
+        id: ownerId,
+        name: stockNameRef.current,
+        symbol: stockSymbolRef.current.trim().toUpperCase(),
+        autoRefreshQuote: autoRefreshRef.current,
+        stockOpen: patch.stockOpen ?? stockOpenRef.current,
+        stockCurrent: patch.stockCurrent ?? stockCurrentRef.current,
+        etfOpen: etfOpenRef.current,
+        leverage: leverageRef.current,
+      })
+      return
+    }
+
     upsert({ ...target, ...patch })
   }, [upsert])
 
