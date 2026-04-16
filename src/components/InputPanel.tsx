@@ -4,6 +4,7 @@ interface Field {
   placeholder: string;
   value: string;
   onChange: (v: string) => void;
+  disabled?: boolean;
 }
 
 interface InputPanelProps {
@@ -13,9 +14,10 @@ interface InputPanelProps {
   onStockOpenChange: (v: string) => void;
   onStockCurrentChange: (v: string) => void;
   onEtfOpenChange: (v: string) => void;
+  disableStockCurrent?: boolean;
 }
 
-function NumberInput({ id, label, placeholder, value, onChange }: Field) {
+function NumberInput({ id, label, placeholder, value, onChange, disabled }: Field) {
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={id} className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -29,8 +31,9 @@ function NumberInput({ id, label, placeholder, value, onChange }: Field) {
         step="any"
         placeholder={placeholder}
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 px-4 py-2.5 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 text-right tabular-nums text-lg focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 transition"
+        className="w-full rounded-lg border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 px-4 py-2.5 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 text-right tabular-nums text-lg focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 transition disabled:opacity-60 disabled:cursor-not-allowed"
       />
     </div>
   );
@@ -43,6 +46,7 @@ export function InputPanel({
   onStockOpenChange,
   onStockCurrentChange,
   onEtfOpenChange,
+  disableStockCurrent,
 }: InputPanelProps) {
   return (
     <div className="grid grid-cols-1 gap-4">
@@ -60,6 +64,7 @@ export function InputPanel({
           placeholder="0.00"
           value={stockCurrent}
           onChange={onStockCurrentChange}
+          disabled={disableStockCurrent}
         />
       </div>
       <NumberInput

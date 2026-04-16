@@ -22,6 +22,8 @@ export interface CalculatorResult {
 export interface StockMemory {
   id: string;
   name: string;
+  symbol?: string;
+  autoRefreshQuote?: boolean;
   stockOpen: string;
   stockCurrent: string;
   etfOpen: string;
