@@ -16,6 +16,17 @@ export interface ParsedQuote {
 
 export type MarketSession = 'premarket' | 'regular' | 'afterhours' | 'closed';
 
+const configuredApiBase = String(import.meta.env.VITE_AASTOCKS_API_BASE ?? '').trim().replace(/\/+$/, '');
+const quoteApiBase = configuredApiBase || '/api';
+
+function buildQuoteApiUrl(path: string, params?: URLSearchParams): string {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const base = `${quoteApiBase}${normalizedPath}`;
+  if (!params) return base;
+  const query = params.toString();
+  return query ? `${base}?${query}` : base;
+}
+
 function toNumber(v: unknown): number | null {
   const n = typeof v === 'string' ? parseFloat(v) : Number(v);
   return isFinite(n) && n > 0 ? n : null;
@@ -75,7 +86,9 @@ export async function bootstrapAastocksPolling(symbol: string): Promise<PollingB
   const cleaned = symbol.trim().toUpperCase();
   if (!cleaned) throw new Error('請先輸入股票代號');
 
-  const response = await fetch(`/api/aastocks/bootstrap?symbol=${encodeURIComponent(cleaned)}`);
+  const response = await fetch(
+    buildQuoteApiUrl('/aastocks/bootstrap', new URLSearchParams({ symbol: cleaned })),
+  );
   if (!response.ok) throw new Error('初始化報價參數失敗');
 
   const data = (await response.json()) as PollingBootstrap;
@@ -93,7 +106,7 @@ export async function pollAastocksQuote(params: PollingBootstrap): Promise<Parse
     token: params.token,
   });
 
-  const response = await fetch(`/api/aastocks/quote?${query.toString()}`);
+  const response = await fetch(buildQuoteApiUrl('/aastocks/quote', query));
   if (response.status === 401 || response.status === 403) {
     const e = new Error('授權失效');
     (e as Error & { status?: number }).status = response.status;

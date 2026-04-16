@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -121,7 +121,16 @@ function aastocksProxyPlugin() {
   }
 }
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), aastocksProxyPlugin()],
-  base: '/leveraged-etf-calculator/',
+export default defineConfig(({ command, mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const base = env.VITE_BASE_PATH || '/'
+
+  return {
+    plugins: [
+      react(),
+      tailwindcss(),
+      ...(command === 'serve' ? [aastocksProxyPlugin()] : []),
+    ],
+    base,
+  }
 })
