@@ -126,6 +126,7 @@ function aastocksProxyPlugin() {
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const base = env.VITE_BASE_PATH || '/'
+  const appVersion = process.env.npm_package_version || '0.0.0'
 
   return {
     plugins: [
@@ -135,5 +136,8 @@ export default defineConfig(({ command, mode }) => {
       cloudflare()
     ],
     base,
+    define: {
+      __APP_VERSION__: JSON.stringify(`v${appVersion}`),
+    },
   };
 })

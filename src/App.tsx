@@ -17,6 +17,9 @@ import { StockSidebar } from './components/StockSidebar'
 import './index.css'
 
 const DEFAULT_LEVERAGE: LeverageOption = { multiplier: 2, direction: 'long' }
+const APP_VERSION = __APP_VERSION__
+const GITHUB_REPO_URL = 'https://github.com/joechoy1219/leveraged-etf-calculator'
+const GITHUB_ISSUES_URL = `${GITHUB_REPO_URL}/issues/new/choose`
 
 function formatAutoRefreshPrice(price: number): string {
   const roundedUp = Math.ceil((price + Number.EPSILON) * 1000) / 1000
@@ -430,16 +433,17 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-slate-100 to-indigo-50 dark:from-slate-900 dark:to-slate-800 flex flex-col md:flex-row items-start justify-center gap-4 pt-12 px-4 pb-12${dark ? ' dark' : ''}`}>
-      <StockSidebar
-        stocks={stocks}
-        activeId={activeId}
-        onSelect={handleSelectStock}
-        onDelete={handleDelete}
-        onReorder={reorder}
-        onAddNew={handleAddNew}
-      />
-      <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
+    <div className={`min-h-screen bg-gradient-to-br from-slate-100 to-indigo-50 dark:from-slate-900 dark:to-slate-800 flex flex-col${dark ? ' dark' : ''}`}>
+      <div className="flex w-full flex-1 flex-col items-start justify-center gap-4 pt-12 px-4 md:flex-row md:items-start md:justify-center">
+        <StockSidebar
+          stocks={stocks}
+          activeId={activeId}
+          onSelect={handleSelectStock}
+          onDelete={handleDelete}
+          onReorder={reorder}
+          onAddNew={handleAddNew}
+        />
+        <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden">
         {/* Header */}
         <div className="bg-indigo-600 dark:bg-indigo-800 px-6 py-5 flex items-start justify-between">
           <div>
@@ -460,9 +464,9 @@ function App() {
           </button>
         </div>
 
-        <div className="px-6 py-5 flex flex-col gap-5">
-          {/* Stock name + save */}
-          <div className="flex gap-2">
+          <div className="px-6 py-5 flex flex-col gap-5">
+            {/* Stock name + save */}
+            <div className="flex gap-2">
             <input
               type="text"
               placeholder="股票名稱 / 代號（如 NVDA）"
@@ -481,8 +485,8 @@ function App() {
             </button>
           </div>
 
-          {/* Symbol + quote fetch */}
-          <div className="flex flex-wrap items-center gap-2">
+            {/* Symbol + quote fetch */}
+            <div className="flex flex-wrap items-center gap-2">
             <input
               type="text"
               placeholder="股票代號（如 NET）"
@@ -526,43 +530,72 @@ function App() {
                 aastocks.com
               </a>
             </div>
+            </div>
+            {quoteError && (
+              <p className="text-xs text-red-500 dark:text-red-400">{quoteError}</p>
+            )}
+
+            {/* Input fields */}
+            <InputPanel
+              stockOpen={stockOpen}
+              stockCurrent={stockCurrent}
+              stockChangePercent={result ? result.stockChangePercent : null}
+              etfOpen={etfOpen}
+              onStockOpenChange={applyStockOpen}
+              onStockCurrentChange={(v) => applyStockCurrent(v, activeIdRef.current)}
+              onEtfOpenChange={applyEtfOpen}
+              disableStockOpen={autoRefreshQuote}
+              disableStockCurrent={autoRefreshQuote}
+            />
+
+            {/* Leverage selector */}
+            <LeverageSelector value={leverage} onChange={applyLeverage} />
+
+            {/* Divider */}
+            <hr className="border-gray-100 dark:border-slate-700" />
+
+            {/* Results */}
+            <ResultPanel result={result} leverage={leverage} />
+
+            {/* Reset */}
+            <button
+              type="button"
+              onClick={handleReset}
+              className="w-full mt-1 py-2 rounded-lg text-sm text-gray-400 dark:text-slate-500 border border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:text-gray-600 dark:hover:text-slate-400 transition cursor-pointer"
+            >
+              清除重設
+            </button>
           </div>
-          {quoteError && (
-            <p className="text-xs text-red-500 dark:text-red-400">{quoteError}</p>
-          )}
-
-          {/* Input fields */}
-          <InputPanel
-            stockOpen={stockOpen}
-            stockCurrent={stockCurrent}
-            stockChangePercent={result ? result.stockChangePercent : null}
-            etfOpen={etfOpen}
-            onStockOpenChange={applyStockOpen}
-            onStockCurrentChange={(v) => applyStockCurrent(v, activeIdRef.current)}
-            onEtfOpenChange={applyEtfOpen}
-            disableStockOpen={autoRefreshQuote}
-            disableStockCurrent={autoRefreshQuote}
-          />
-
-          {/* Leverage selector */}
-          <LeverageSelector value={leverage} onChange={applyLeverage} />
-
-          {/* Divider */}
-          <hr className="border-gray-100 dark:border-slate-700" />
-
-          {/* Results */}
-          <ResultPanel result={result} leverage={leverage} />
-
-          {/* Reset */}
-          <button
-            type="button"
-            onClick={handleReset}
-            className="w-full mt-1 py-2 rounded-lg text-sm text-gray-400 dark:text-slate-500 border border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 hover:text-gray-600 dark:hover:text-slate-400 transition cursor-pointer"
-          >
-            清除重設
-          </button>
         </div>
       </div>
+
+      <footer className="px-4 pb-8 pt-3 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p className="flex flex-wrap items-center justify-center gap-2">
+          <span>© 2026 槓桿 ETF 計算器</span>
+          <span aria-hidden="true">·</span>
+          <a
+            href={GITHUB_REPO_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            GitHub 原始碼
+          </a>
+          <span aria-hidden="true">·</span>
+          <a
+            href={GITHUB_ISSUES_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            問題回報
+          </a>
+          <span aria-hidden="true">·</span>
+          <span>歡迎意見回饋</span>
+          <span aria-hidden="true">·</span>
+          <span>{APP_VERSION}</span>
+        </p>
+      </footer>
     </div>
   )
 }
